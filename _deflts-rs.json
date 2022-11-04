@@ -1,0 +1,13 @@
+{
+  "deflt": {
+    "acks_dir"     : "\\\\bosch.com\\dfsrb\\DfsUS\\loc\\Mx\\ILM\\Projects\\CFA\\Edifcack\\",
+    "acks_type"    : "txt",
+    "xml_dir"      : "files\\",
+    "xml_type"     : "xml",
+    "db_dir"       : ".\\",
+    "db_name"      : "fcaacks.db",
+    "report_filter": "current",
+    "filter_parm1" : "year",
+    "filter_parm2" : "na"
+  }
+}
