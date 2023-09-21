@@ -13,12 +13,7 @@ use std::fs::File;
 use std::path::Path;
 
 // Set/Reset DB tables -------------------------------------------------------------
-const ITABLES: &str = r#"{
-  "sqlst": [
-    {"activ": true, "table": "acks", "sqlst": "CREATE TABLE IF NOT EXISTS acks (ackno INTEGER PRIMARY KEY, issue TEXT, rceiv TEXT, invoi TEXT, serie TEXT, folio TEXT, uuid TEXT, dtime TEXT, stats TEXT, errn1 TEXT, errn2 TEXT, notes TEXT);"},
-    {"activ": true, "table": "last", "sqlst": "CREATE TABLE IF NOT EXISTS last (recno TEXT PRIMARY KEY, ackno INTEGER);"}
-  ]
-}"#;
+const ITABLES: &str = include!("sqlstmts.json");
 
 #[derive(Debug, Clone, Default, Deserialize)]
 struct SqlstTp {
@@ -107,7 +102,7 @@ pub fn updt_tables(s: SettingsTp) {
   cnn.execute("UPDATE last SET ackno=?1 WHERE recno='00';", [format!("{}", ilfil)])
     .expect("Error updating table LAST.");
   note_corrections(&cnn);
-  println!("\nProcess is completed.");
+  println!("\nProcess completed.");
 }
 
 fn get_lastack(cnn: &Connection) -> i64 {

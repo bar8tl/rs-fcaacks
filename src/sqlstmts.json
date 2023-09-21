@@ -1,0 +1,10 @@
+r#"
+{
+  "sqlst": [
+    {"activ": true, "table": "acks",
+     "sqlst": "CREATE TABLE IF NOT EXISTS acks (ackno INTEGER PRIMARY KEY, issue TEXT, rceiv TEXT, invoi TEXT, serie TEXT, folio TEXT, uuid TEXT, dtime TEXT, stats TEXT, errn1 TEXT, errn2 TEXT, notes TEXT);"},
+    {"activ": true, "table": "last",
+     "sqlst": "CREATE TABLE IF NOT EXISTS last (recno TEXT PRIMARY KEY, ackno INTEGER);"}
+  ]
+}
+"#

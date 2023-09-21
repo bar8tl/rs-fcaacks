@@ -6,23 +6,13 @@ use chrono::Local;
 use chrono::{Datelike, Duration, NaiveDate, NaiveDateTime};
 use rblib::params::{ParamsTp, ParameTp};
 
-const ACKS_DIR     : &str =
-  "\\\\bosch.com\\dfsrb\\DfsUS\\loc\\Mx\\ILM\\Projects\\CFA\\Edifcack\\";
-const ACKS_TYPE    : &str = "txt";
-const XML_DIR      : &str = "files\\";
-const XML_TYPE     : &str = "xml";
-const DB_DIR       : &str = ".\\";
-const DB_NAME      : &str = "fcaacks.db";
-const OUTPUT_DIR   : &str = ".\\";
-const OUTPUT_NAME  : &str = "zdcmex-rs.xlsx";
-const REPORT_FILTER: &str = "current";
-const FILTER_PARM1 : &str = "year";
-const FILTER_PARM2 : &str = "na";
+const DEFAULTS: &str = include!("defaults.json");
 
 #[derive(Debug, Clone, Default)]
 pub struct SettingsTp {
   pub prm  : ParamsTp,
   pub cfd  : ConfigTp,
+  pub dfl  : ConfigTp,
   pub ackdr: String,
   pub acktp: String,
   pub xmldr: String,
@@ -36,6 +26,7 @@ pub struct SettingsTp {
   pub filtr: String,
   pub fprm1: String,
   pub fprm2: String,
+  pub objnm: String,
   pub found: bool,
   pub dtsys: NaiveDateTime,
   pub dtcur: NaiveDateTime,
@@ -47,6 +38,7 @@ pub struct SettingsTp {
 impl SettingsTp {
   pub fn new_settings() -> SettingsTp {
     let mut stg = SettingsTp { ..Default::default() };
+    stg.dfl = serde_json::from_str(DEFAULTS).unwrap();
     stg.prm = ParamsTp::new_params();
     stg.cfd = ConfigTp::new_config();
     stg.set_settings("_config.json");
@@ -58,21 +50,21 @@ impl SettingsTp {
     self.cfd.get_config(cfnam);
     let c = &self.cfd;
     self.ackdr = if c.progm.ackdr.len() > 0
-      { c.progm.ackdr.clone() } else { ACKS_DIR.to_string()    };
+      { c.progm.ackdr.clone() } else { self.dfl.progm.ackdr.clone() };
     self.acktp = if c.progm.acktp.len() > 0
-      { c.progm.acktp.clone() } else { ACKS_TYPE.to_string()   };
+      { c.progm.acktp.clone() } else { self.dfl.progm.acktp.clone() };
     self.xmldr = if c.progm.xmldr.len() > 0
-      { c.progm.xmldr.clone() } else { XML_DIR.to_string()     };
+      { c.progm.xmldr.clone() } else { self.dfl.progm.xmldr.clone() };
     self.xmltp = if c.progm.xmltp.len() > 0
-      { c.progm.xmltp.clone() } else { XML_TYPE.to_string()    };
+      { c.progm.xmltp.clone() } else { self.dfl.progm.xmltp.clone() };
     self.dbodr = if c.progm.dbodr.len() > 0
-      { c.progm.dbodr.clone() } else { DB_DIR.to_string()      };
+      { c.progm.dbodr.clone() } else { self.dfl.progm.dbodr.clone() };
     self.dbonm = if c.progm.dbonm.len() > 0
-      { c.progm.dbonm.clone() } else { DB_NAME.to_string()     };
+      { c.progm.dbonm.clone() } else { self.dfl.progm.dbonm.clone() };
     self.outdr = if c.progm.outdr.len() > 0
-      { c.progm.outdr.clone() } else { OUTPUT_DIR.to_string()  };
+      { c.progm.outdr.clone() } else { self.dfl.progm.outdr.clone() };
     self.outfl = if c.progm.outfl.len() > 0
-      { c.progm.outfl.clone() } else { OUTPUT_NAME.to_string() };
+      { c.progm.outfl.clone() } else { self.dfl.progm.outfl.clone() };
     self.dbopt = format!("{}{}", self.dbodr, self.dbonm);
     self.outpt = format!("{}{}", self.outdr, self.outfl);
     self.dtsys = Local::now().naive_local();
@@ -85,19 +77,30 @@ impl SettingsTp {
 
   pub fn set_runvars(&mut self, p: &ParameTp) {
     self.found = false;
-    for run in &self.cfd.run {
+    for run in &self.dfl.run {
       if p.optn == run.optcd {
-        self.found = true;
         if p.optn == "out" {
+          self.found = true;
           if run.outdr.len() > 0 { self.outdr = run.outdr.clone(); }
           if run.outfl.len() > 0 { self.outfl = run.outfl.clone(); }
+          if run.filtr.len() > 0 { self.filtr = run.filtr.clone(); }
+          if run.fprm1.len() > 0 { self.fprm1 = run.fprm1.clone(); }
+          if run.fprm2.len() > 0 { self.fprm2 = run.fprm2.clone(); }
           self.outpt = format!("{}{}", self.outdr, self.outfl);
-          self.filtr = if run.filtr.len() > 0
-            { run.filtr.clone() } else { REPORT_FILTER.to_string() };
-          self.fprm1 = if run.fprm1.len() > 0
-            { run.fprm1.clone() } else { FILTER_PARM1.to_string()  };
-          self.fprm2 = if run.fprm2.len() > 0
-            { run.fprm2.clone() } else { FILTER_PARM2.to_string()  };
+        }
+        break;
+      }
+    }
+    for run in &self.cfd.run {
+      if p.optn == run.optcd {
+        if p.optn == "out" {
+          self.found = true;
+          if run.outdr.len() > 0 { self.outdr = run.outdr.clone(); }
+          if run.outfl.len() > 0 { self.outfl = run.outfl.clone(); }
+          if run.filtr.len() > 0 { self.filtr = run.filtr.clone(); }
+          if run.fprm1.len() > 0 { self.fprm1 = run.fprm1.clone(); }
+          if run.fprm2.len() > 0 { self.fprm2 = run.fprm2.clone(); }
+          self.outpt = format!("{}{}", self.outdr, self.outfl);
         }
         break;
       }
@@ -105,10 +108,10 @@ impl SettingsTp {
     if self.found && p.optn == "out" {
       if self.filtr == "current" {
         self.tdate = self.dtsys.clone();
-        let tdate = self.tdate.date();
-        let tyear = tdate.year();
-        let tmnth = tdate.month();
-        let tday  = tdate.day();
+        let  tdate = self.tdate.date();
+        let  tyear = tdate.year();
+        let  tmnth = tdate.month();
+        let  tday  = tdate.day();
                if self.fprm1 == "year"  {
           self.fdate = NaiveDate::from_ymd_opt(tyear, 1, 1).unwrap()
             .and_hms_opt(0, 0, 0).unwrap();
@@ -121,9 +124,9 @@ impl SettingsTp {
         }
       } else if self.filtr == "past" {
         self.tdate = self.dtsys.clone();
-        let dday: i64 = self.fprm1.trim().parse().unwrap();
-        let tdate = self.tdate.date();
-        let fdate = tdate - Duration::days(dday);
+        let  dday: i64 = self.fprm1.trim().parse().unwrap();
+        let  tdate = self.tdate.date();
+        let  fdate = tdate - Duration::days(dday);
         self.fdate = fdate.and_hms_opt(0, 0, 0).unwrap();
       }
     }

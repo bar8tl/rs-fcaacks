@@ -1,5 +1,5 @@
 //**********************************************************************************
-// acks.rs: Inital/Periodic copy of Chrysler ack files into a local folder
+// copyacks.rs: Inital/Periodic copy of Chrysler ack files into a local folder
 // (2022-04-06 bar8tl)
 //**********************************************************************************
 #![allow(unused)]
@@ -30,8 +30,8 @@ fn copy_files(ffold: String, tfold: &String, fextn: &String, textn: &String) {
     let _ifile: i32 = filnm.trim().parse().unwrap();
     if extsn.to_str().unwrap().to_lowercase() == fextn.to_lowercase() {
       println!("> copying file: {}", filid.to_str().unwrap());
-      let parm1 = format!("{}{}", ffold, filid.to_str().unwrap());
-      let parm2 = format!("{}{}.{}", tfold, filnm, textn);
+      let parm1  = format!("{}{}", ffold, filid.to_str().unwrap());
+      let parm2  = format!("{}{}.{}", tfold, filnm, textn);
       let output = Command::new("cmd").args(&["/C", "copy",
         parm1.as_str(), parm2.as_str()]).output()
         .expect("Failed to execute system command");
@@ -60,8 +60,8 @@ pub fn rfsh_files(s: SettingsTp) {
         Ok(rows) => {}
         Err(query_returned_no_rows) => {
           println!("> copying file {}", filid.to_str().unwrap());
-          let parm1 = format!("{}{}", s.ackdr, filid.to_str().unwrap());
-          let parm2 = format!("{}{}.{}", s.xmldr, filnm, s.xmltp);
+          let parm1  = format!("{}{}", s.ackdr, filid.to_str().unwrap());
+          let parm2  = format!("{}{}.{}", s.xmldr, filnm, s.xmltp);
           let output = Command::new("cmd").args(&["/C", "copy",
             parm1.as_str(), parm2.as_str()]).output()
             .expect("Failed to execute system command");

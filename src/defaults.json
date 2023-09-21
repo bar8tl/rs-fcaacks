@@ -1,0 +1,22 @@
+r#"
+{
+  "progm": {
+    "ackdr": "\\\\bosch.com\\dfsrb\\DfsUS\\loc\\Mx\\ILM\\Projects\\CFA\\Edifcack\\",
+    "acktp": "txt",
+    "xmldr": "files\\",
+    "xmltp": "xml",
+    "dbodr": ".\\",
+    "dbonm": "fcaacks.db"
+  },
+  "run": [
+    {
+      "optcd": "out",
+      "outdr": ".\\",
+      "outfl": "zdcmex-rs.xlsx",
+      "filtr": "current",
+      "fprm1": "year",
+      "fprm2": "na"
+    }
+  ]
+}
+"#

@@ -60,16 +60,16 @@ pub fn crea_excel(s: SettingsTp) {
   let mut stmt = conn.prepare(
     "SELECT * FROM acks ORDER BY dtime, ackno").unwrap();
   let foundack_iter = stmt.query_map([], |row| { Ok(AcksTp {
-      ackno: row.get(0).unwrap(),
-      issue: row.get(1).unwrap(),
-      rceiv: row.get(2).unwrap(),
-      invoi: row.get(3).unwrap(),
-      serie: row.get(4).unwrap(),
-      folio: row.get(5).unwrap(),
-      uuidn: row.get(6).unwrap(),
-      dtime: row.get(7).unwrap(),
-      stats: row.get(8).unwrap(),
-      errn1: row.get(9).unwrap(),
+      ackno: row.get(0) .unwrap(),
+      issue: row.get(1) .unwrap(),
+      rceiv: row.get(2) .unwrap(),
+      invoi: row.get(3) .unwrap(),
+      serie: row.get(4) .unwrap(),
+      folio: row.get(5) .unwrap(),
+      uuidn: row.get(6) .unwrap(),
+      dtime: row.get(7) .unwrap(),
+      stats: row.get(8) .unwrap(),
+      errn1: row.get(9) .unwrap(),
       errn2: row.get(10).unwrap(),
       notas: row.get(11).unwrap()
     })
@@ -77,8 +77,8 @@ pub fn crea_excel(s: SettingsTp) {
   let mut j: u32 = 1;
   for foundack in foundack_iter {
     let acknm = foundack.unwrap().clone();
-    let nyr: i32 = acknm.dtime[0..4].parse().unwrap();
-    let nmn: u32 = acknm.dtime[5..7].parse().unwrap();
+    let nyr: i32 = acknm.dtime[0..4] .parse().unwrap();
+    let nmn: u32 = acknm.dtime[5..7] .parse().unwrap();
     let ndy: u32 = acknm.dtime[8..10].parse().unwrap();
     let wdate = NaiveDate::from_ymd_opt(nyr, nmn, ndy).unwrap()
       .and_hms_opt(0, 0, 0).unwrap();
