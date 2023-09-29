@@ -138,7 +138,7 @@ impl SettingsTp {
 //**********************************************************************************
 mod config {
   use serde::Deserialize;
-  use serde_json;
+  use serde_json::from_reader;
   use std::fs::File;
 
   #[derive(Debug, Clone, Default, Deserialize)]
@@ -192,9 +192,11 @@ mod config {
     }
 
     pub fn get_config(&mut self, fname: &str) {
-      let f = File::open(fname).unwrap();
-      let cfg: ConfigTp = serde_json::from_reader(f)
-        .expect("JSON not well-formed");
+      let mut cfg: ConfigTp = Default::default();
+      match File::open(fname) {
+        Ok(f)  => { cfg = from_reader(f).expect("Error Deserializing JSON"); },
+        Err(_) => {},
+      };
       self.progm = cfg.progm;
       self.run   = cfg.run;
     }
