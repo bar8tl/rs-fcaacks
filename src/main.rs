@@ -10,11 +10,11 @@ mod settings;
 fn main() {
   let optns = ["cdb", "ini", "ref", "upd", "out"];
   let funcs = [
-    dbase   ::crea_tables, // Set/Reset DB tables
+    dbase   ::crea_tables, // Set/Reset Sqlite DB tables content
     copyacks::init_files,  // Initial Chrysler files copy into a local folder
     copyacks::rfsh_files,  // Keep local folder updated with newly received files
     dbase   ::updt_tables, // Maintain local acks DB updated
-    output  ::crea_excel   // Produce output to excel file
+    output  ::crea_excel   // Produce output into an excel file
   ];
   let stg = settings::SettingsTp::new_settings();
   let t = stg.clone();
