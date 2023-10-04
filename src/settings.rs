@@ -41,7 +41,7 @@ impl SettingsTp {
     stg.dfl = serde_json::from_str(DEFAULTS).unwrap();
     stg.prm = ParamsTp::new_params();
     stg.cfd = ConfigTp::new_config();
-    stg.set_settings("_config.json");
+    stg.set_settings("fcaacks-cfg.json");
     stg
   }
 
