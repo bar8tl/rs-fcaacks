@@ -1,26 +1,20 @@
-//**********************************************************************************
-// main.rs: Starts processes for Chrysler XML Invoice Acknowledgments - retrieval
-// and report (2022-04-06 bar8tl)
-//**********************************************************************************
-mod copyacks;
-mod dbase;
-mod output;
-mod settings;
+// main.rs - Program to test/start functions to generate Chrysler XML Invoices
+// Acks Report (2019-03-01 bar8tl)
+include!("header.rs");
 
 fn main() {
-  let optns = ["cdb", "ini", "ref", "upd", "out"];
-  let funcs = [
-    dbase   ::crea_tables, // Set/Reset Sqlite DB tables content
-    copyacks::init_files,  // Initial Chrysler files copy into a local folder
-    copyacks::rfsh_files,  // Keep local folder updated with newly received files
-    dbase   ::updt_tables, // Maintain local acks DB updated
-    output  ::crea_excel   // Produce output into an excel file
-  ];
-  let stg = settings::SettingsTp::new_settings();
+  let stg = set_pgm_settings(CONFIG_FILENAME);
   let t = stg.clone();
   for p in t.prm.cmdpr {
     let mut s = stg.clone();
-    s.set_runvars(&p);
-    funcs[optns.iter().position(|&x| x == p.optn).unwrap()](s);
+    set_run_settings(&mut s, &p);
+    match p.optn.as_str() {
+      "cdb" => create_tablelist(s.dbopt),
+      "ini" => init_files (s.ackdr, s.xmldr, s.acktp, s.xmltp),
+      "ref" => rfsh_files (s.dbopt, s.ackdr, s.xmldr, s.acktp, s.xmltp),
+      "upd" => updt_tables(s.dbopt, s.xmldr, s.xmltp),
+      "out" => crea_excel (s.dbopt, s.outpt, s.fdate, s.tdate),
+          _ => println!("Run option not valid"),
+    };
   }
 }

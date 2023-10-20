@@ -1,13 +1,8 @@
-//**********************************************************************************
-// output.rs: Generates excel report and address in to an excel file
-// (2022-04-06 bar8tl)
-//**********************************************************************************
-use crate::settings::SettingsTp;
-use chrono::NaiveDate;
+// crea_excel.rs - Excel acks report generation (2019-03-01 bar8tl)
+use chrono::{NaiveDate, NaiveDateTime};
 use rusqlite::Connection;
 use rust_xlsxwriter::{Format, Workbook};
 
-// toexcel - Produces output to excel file -----------------------------------------
 #[derive(Debug, Clone, Default)]
 pub struct AcksTp {
   pub ackno: i64,
@@ -31,9 +26,10 @@ pub struct ColTp<'a> {
   pub dsc: &'a str
 }
 
-pub fn crea_excel(s: SettingsTp) {
-  let conn = Connection::open(&s.dbopt).unwrap();
-  let xlspt = s.outpt.clone();
+pub fn crea_excel(dbopt: String, outpt: String, fdate: NaiveDateTime,
+  tdate: NaiveDateTime) {
+  let conn = Connection::open(&dbopt).unwrap();
+  let xlspt = outpt.clone();
   let mut ofile = Workbook::new(&xlspt);
   let blfmt = Format::new().set_bold();
   let wksht = ofile.add_worksheet();
@@ -82,7 +78,7 @@ pub fn crea_excel(s: SettingsTp) {
     let ndy: u32 = acknm.dtime[8..10].parse().unwrap();
     let wdate = NaiveDate::from_ymd_opt(nyr, nmn, ndy).unwrap()
       .and_hms_opt(0, 0, 0).unwrap();
-    if wdate >= s.fdate && wdate <= s.tdate {
+    if wdate >= fdate && wdate <= tdate {
       wksht.write_string_only(j, 0, &(format!("{}",acknm.ackno).as_str())).unwrap();
       wksht.write_string_only(j, 1, &acknm.issue).unwrap();
       wksht.write_string_only(j, 2, &acknm.rceiv).unwrap();
