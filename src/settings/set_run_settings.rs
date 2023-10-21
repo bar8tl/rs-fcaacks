@@ -1,37 +1,31 @@
 // set_run_settings.rs - Option Run/Execution level setting definition
 // (2019-03-01 bar8tl)
 use crate::settings::set_pgm_settings::SettingsTp;
+use crate::settings::read_config_file::RunTp;
 use chrono::{Datelike, Duration, NaiveDate};
 use rblib::read_cmdline_args::ParameTp;
 
 pub fn set_run_settings(s: &mut SettingsTp, p: &ParameTp) {
-  for run in &s.dfl.run {
-    if p.optn == run.optcd {
-      if p.optn == "out" {
-        if run.outdr.len() > 0 { s.outdr = run.outdr.clone(); }
-        if run.outfl.len() > 0 { s.outfl = run.outfl.clone(); }
-        if run.filtr.len() > 0 { s.filtr = run.filtr.clone(); }
-        if run.fprm1.len() > 0 { s.fprm1 = run.fprm1.clone(); }
-        if run.fprm2.len() > 0 { s.fprm2 = run.fprm2.clone(); }
-        s.outpt = format!("{}{}", s.outdr, s.outfl);
-      }
+/* For now, none of optns will require object name. Thus this paragraph is commented
+  if p.prm1.len() > 0 {
+    s.objnm = p.prm1.clone();
+  } else {
+    panic!("Error: Not possible to determine Object name");
+  } */
+  s.found = 0;
+  for run in s.dfl.run.clone() {
+    set_optn_settings(&p.optn, &run, s);
+    if s.found > 0 {
       break;
     }
   }
-  for run in &s.cfg.run {
-    if p.optn == run.optcd {
-      if p.optn == "out" {
-        if run.outdr.len() > 0 { s.outdr = run.outdr.clone(); }
-        if run.outfl.len() > 0 { s.outfl = run.outfl.clone(); }
-        if run.filtr.len() > 0 { s.filtr = run.filtr.clone(); }
-        if run.fprm1.len() > 0 { s.fprm1 = run.fprm1.clone(); }
-        if run.fprm2.len() > 0 { s.fprm2 = run.fprm2.clone(); }
-        s.outpt = format!("{}{}", s.outdr, s.outfl);
-      }
+  for run in s.cfg.run.clone() {
+    set_optn_settings(&p.optn, &run, s);
+    if s.found > 0 {
       break;
     }
   }
-  if s.found && p.optn == "out" {
+  if s.found > 0 && p.optn == "out" {
     if s.filtr == "current" {
       s.tdate = s.dtsys.clone();
       let tdate = s.tdate.date();
@@ -56,4 +50,18 @@ pub fn set_run_settings(s: &mut SettingsTp, p: &ParameTp) {
       s.fdate = fdate.and_hms_opt(0, 0, 0).unwrap();
     }
   }
+}
+
+fn set_optn_settings(optn: &String, run: &RunTp, s: &mut SettingsTp) {
+  if optn == &run.optcd /* && p.prm1 == run.objnm */ {
+    if optn == "out" {
+      if run.outdr.len() > 0 { s.outdr = run.outdr.clone(); }
+      if run.outfl.len() > 0 { s.outfl = run.outfl.clone(); }
+      if run.filtr.len() > 0 { s.filtr = run.filtr.clone(); }
+      if run.fprm1.len() > 0 { s.fprm1 = run.fprm1.clone(); }
+      if run.fprm2.len() > 0 { s.fprm2 = run.fprm2.clone(); }
+      s.outpt = format!("{}{}", s.outdr, s.outfl);
+    }
+  }
+  s.found += 1;
 }

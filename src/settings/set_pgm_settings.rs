@@ -26,7 +26,7 @@ pub struct SettingsTp {
   pub fprm1: String,
   pub fprm2: String,
   pub objnm: String,
-  pub found: bool,
+  pub found: i8,
   pub dtsys: NaiveDateTime,
   pub dtcur: NaiveDateTime,
   pub dtnul: NaiveDateTime,
