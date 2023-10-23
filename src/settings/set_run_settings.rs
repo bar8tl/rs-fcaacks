@@ -5,6 +5,13 @@ use crate::settings::read_config_file::RunTp;
 use chrono::{Datelike, Duration, NaiveDate};
 use rblib::read_cmdline_args::ParameTp;
 
+// Run options
+pub const CREATE_DB: &str = "cdb";
+pub const INIT_COPY: &str = "ini";
+pub const REFH_COPY: &str = "ref";
+pub const UPDT_LOCL: &str = "upd";
+pub const OUT_EXCEL: &str = "out";
+
 pub fn set_run_settings(s: &mut SettingsTp, p: &ParameTp) {
 /* For now, none of optns will require object name. Thus this paragraph is commented
   if p.prm1.len() > 0 {
@@ -25,7 +32,7 @@ pub fn set_run_settings(s: &mut SettingsTp, p: &ParameTp) {
       break;
     }
   }
-  if s.found > 0 && p.optn == "out" {
+  if s.found > 0 && p.optn == OUT_EXCEL {
     if s.filtr == "current" {
       s.tdate = s.dtsys.clone();
       let tdate = s.tdate.date();
@@ -54,7 +61,7 @@ pub fn set_run_settings(s: &mut SettingsTp, p: &ParameTp) {
 
 fn set_optn_settings(optn: &String, run: &RunTp, s: &mut SettingsTp) {
   if optn == &run.optcd /* && p.prm1 == run.objnm */ {
-    if optn == "out" {
+    if optn == OUT_EXCEL {
       if run.outdr.len() > 0 { s.outdr = run.outdr.clone(); }
       if run.outfl.len() > 0 { s.outfl = run.outfl.clone(); }
       if run.filtr.len() > 0 { s.filtr = run.filtr.clone(); }
